@@ -1,88 +1,59 @@
 import streamlit as st
-from roboflow import Roboflow
 from PIL import Image
 import cv2
 import numpy as np
-import tempfile
-import os
+from roboflow import Roboflow
 
-# ====================
-# 🔧 Configuración Roboflow
-# ====================
-API_KEY = "uSCqi2uF8qf6Udwu1sm0"
-WORKSPACE = "hx-hezqh"
-PROJECT = "ppe-detection-yfmym"
-VERSION = 1
+# Inicializar Roboflow
+rf = Roboflow(api_key="uSCqi2uF8qf6Udwu1sm0")
+project = rf.workspace().project("ppe-detection-yfmym")
+model = project.version(1).model
 
-# ====================
-# 🎨 Interfaz Streamlit
-# ====================
-st.set_page_config(page_title="🚨 Sistema de Detección de EPP", layout="centered")
-st.title("🚨 Sistema de Detección de Equipo de Protección Personal")
+# Imagen decorativa superior
+st.image("https://i.pinimg.com/1200x/08/e0/c1/08e0c18e38e81d330ee1ea03bb795f32.jpg", use_column_width=True)
+
+# Título principal
+st.markdown("## 🦺 Sistema de Detección de EPP - Versión Mejorada 🔍")
 st.markdown("---")
 
-st.sidebar.header("⚙️ Configuración")
-fuente = st.sidebar.radio("📷 Seleccione fuente de imagen:", ["Subir imagen", "Usar cámara"])
+# Configuración
+st.sidebar.markdown("## ⚙️ Configuración")
+source = st.sidebar.radio("📷 Selecciona fuente de imagen:", ["Subir imagen", "Usar cámara"])
 
-st.markdown("## 🛡️ Elementos Requeridos")
-st.markdown("Este sistema detecta si una persona está usando casco, chaleco, gafas, etc.")
+# Elementos requeridos (fijo o personalizable)
+st.sidebar.markdown("## 🛡️ Elementos Requeridos")
+st.sidebar.text("Casco, chaleco, guantes, gafas...")
 
-# ====================
-# 📷 Captura de imagen
-# ====================
-img = None
+# Cargar imagen
+image = None
+if source == "Subir imagen":
+    uploaded_file = st.file_uploader("🖼️ Sube una imagen para analizar", type=["jpg", "jpeg", "png"])
+    if uploaded_file:
+        file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+        image = cv2.imdecode(file_bytes, 1)
+elif source == "Usar cámara":
+    image = st.camera_input("📸 Captura una imagen")
 
-if fuente == "Subir imagen":
-    st.markdown("### 🖼️ Seleccione imagen:")
-    file = st.file_uploader("Cargue una imagen (JPG, PNG)", type=["jpg", "jpeg", "png"])
-    if file:
-        img = Image.open(file)
-        st.image(img, caption="Imagen cargada", use_column_width=True)
-
-elif fuente == "Usar cámara":
-    st.markdown("### 📸 Capture una imagen:")
-    img_bytes = st.camera_input("Tomar foto")
-    if img_bytes:
-        img = Image.open(img_bytes)
-        st.image(img, caption="Imagen capturada", use_column_width=True)
-
-# ====================
-# 🔍 Procesamiento con Roboflow
-# ====================
-if img:
-    st.markdown("## 🔍 Resultados del Análisis")
-
-    # Guardar imagen temporal
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
-        img.save(temp_file.name)
-        image_path = temp_file.name
-
-    # Inicializar Roboflow
-    rf = Roboflow(api_key=API_KEY)
-    project = rf.workspace(WORKSPACE).project(PROJECT)
-    model = project.version(VERSION).model
-
-    # Realizar predicción
-    with st.spinner("Analizando imagen..."):
-        result = model.predict(image_path, confidence=40, overlap=30).json()
-
-    # Mostrar resultados
-    detections = result.get("predictions", [])
-    if detections:
-        st.success(f"Se detectaron {len(detections)} objetos:")
-        for det in detections:
-            st.markdown(f"- **{det['class']}** con {round(det['confidence']*100, 2)}% de confianza")
-        
-        # Mostrar imagen con cajas
-        output_path = model.predict(image_path, confidence=40, overlap=30).save(output_dir=".")
-        st.image(output_path, caption="Detecciones", use_column_width=True)
-
-        # Borrar imagen temporal
-        os.remove(image_path)
-        if os.path.exists("prediction.jpg"):
-            os.remove("prediction.jpg")
+# Mostrar resultados
+st.markdown("## 🔍 Resultados del Análisis")
+if image is not None:
+    if source == "Usar cámara":
+        image = Image.open(image)
+        image.save("captured_image.jpg")
+        prediction = model.predict("captured_image.jpg", confidence=40, overlap=30).json()
+        result_image = model.predict("captured_image.jpg", confidence=40, overlap=30).save("result.jpg")
     else:
-        st.warning("No se detectaron elementos de protección en la imagen.")
+        cv2.imwrite("uploaded_image.jpg", image)
+        prediction = model.predict("uploaded_image.jpg", confidence=40, overlap=30).json()
+        result_image = model.predict("uploaded_image.jpg", confidence=40, overlap=30).save("result.jpg")
+
+    st.image("result.jpg", caption="🔍 Resultado del modelo", use_column_width=True)
+
+    st.success("✅ Análisis completo. Revisa la imagen con los elementos detectados.")
 
 else:
-    st.info("ℹ️ Configure los parámetros y cargue una imagen para realizar el análisis.")
+    st.info("👈 Configura los parámetros y carga una imagen para analizarla.")
+
+# Footer cool
+st.markdown("---")
+st.markdown("Hecho con 💻 por Cristian – Potenciado con [Roboflow](https://roboflow.com) 🚀")
