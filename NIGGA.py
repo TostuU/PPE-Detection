@@ -10,7 +10,7 @@ project = rf.workspace().project("ppe-detection-yfmym")
 model = project.version(1).model
 
 # Imagen decorativa superior
-st.image("https://i.pinimg.com/1200x/08/e0/c1/08e0c18e38e81d330ee1ea03bb795f32.jpg", use_column_width=True)
+st.image("https://i.pinimg.com/1200x/08/e0/c1/08e0c18e38e81d330ee1ea03bb795f32.jpg", use_container_width=True)
 
 # Título principal
 st.markdown("## 🦺 Sistema de Detección de EPP - Versión Mejorada 🔍")
