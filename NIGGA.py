@@ -4,25 +4,41 @@ import cv2
 import numpy as np
 from roboflow import Roboflow
 
+# Estilo oscuro
+st.set_page_config(page_title="Detección EPP", layout="wide")
+st.markdown("""
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        .stApp {
+            background-color: #1e1e1e;
+        }
+        .css-1d391kg {  /* sidebar */
+            background-color: #2c2c2c !important;
+        }
+        .css-1v0mbdj p {  /* sidebar text */
+            color: #ffffff;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # Inicializar Roboflow
 rf = Roboflow(api_key="uSCqi2uF8qf6Udwu1sm0")
 project = rf.workspace().project("ppe-detection-yfmym")
 model = project.version(1).model
 
-
-st.markdown("Soy ese, el mejor animal joder.")
-# Imagen decorativa superior
+st.markdown("## 🦺 Sistema de Detección de EPP 🌑")
+st.markdown("## Soy ese joder, el mejor animal.")
 st.image("https://i.pinimg.com/1200x/08/e0/c1/08e0c18e38e81d330ee1ea03bb795f32.jpg", use_container_width=True)
-
-# Título principal
-st.markdown("## 🦺 Sistema de Detección de EPP  🔍")
-st.markdown("---")
+st.markdown("""---""")
 
 # Configuración
 st.sidebar.markdown("## ⚙️ Configuración")
 source = st.sidebar.radio("📷 Selecciona fuente de imagen:", ["Subir imagen", "Usar cámara"])
 
-# Elementos requeridos (fijo o personalizable)
+# Elementos requeridos
 st.sidebar.markdown("## 🛡️ Elementos Requeridos")
 st.sidebar.text("Casco, chaleco, guantes, gafas...")
 
@@ -49,13 +65,11 @@ if image is not None:
         prediction = model.predict("uploaded_image.jpg", confidence=40, overlap=30).json()
         result_image = model.predict("uploaded_image.jpg", confidence=40, overlap=30).save("result.jpg")
 
-    st.image("result.jpg", caption="🔍 Resultado del modelo", use_column_width=True)
-
+    st.image("result.jpg", caption="🔍 Resultado del modelo", use_container_width=True)
     st.success("✅ Análisis completo. Revisa la imagen con los elementos detectados.")
-
 else:
     st.info("👈 Configura los parámetros y carga una imagen para analizarla.")
 
-# Footer cool
+# Footer
 st.markdown("---")
 st.markdown("Hecho con 💻 por Cristian – Potenciado con [Roboflow](https://roboflow.com) 🚀")
