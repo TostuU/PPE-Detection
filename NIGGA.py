@@ -53,4 +53,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.markdown("Hecho con 💻 por Cristian – Potenciado con [Roboflow](https://roboflow.com) 🚀")
+st.markdown("Hecho con 💻 por Cristian y Javier – Potenciado con [Roboflow](https://roboflow.com) 🚀")
