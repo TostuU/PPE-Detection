@@ -13,7 +13,7 @@ model = project.version(1).model
 st.image("https://i.pinimg.com/1200x/08/e0/c1/08e0c18e38e81d330ee1ea03bb795f32.jpg", use_container_width=True)
 
 # Título principal
-st.markdown("## 🦺 Sistema de Detección de EPP - Versión Mejorada 🔍")
+st.markdown("## 🦺 Sistema de Detección de EPP  🔍")
 st.markdown("---")
 
 # Configuración
