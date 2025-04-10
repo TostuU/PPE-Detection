@@ -4,25 +4,6 @@ import cv2
 import numpy as np
 from roboflow import Roboflow
 
-# Estilo oscuro
-st.set_page_config(page_title="Detección EPP", layout="wide")
-st.markdown("""
-    <style>
-        body {
-            background-color: #1e1e1e;
-            color: #ffffff;
-        }
-        .stApp {
-            background-color: #1e1e1e;
-        }
-        .css-1d391kg {  /* sidebar */
-            background-color: #2c2c2c !important;
-        }
-        .css-1v0mbdj p {  /* sidebar text */
-            color: #ffffff;
-        }
-    </style>
-""", unsafe_allow_html=True)
 
 # Inicializar Roboflow
 rf = Roboflow(api_key="uSCqi2uF8qf6Udwu1sm0")
